@@ -5,7 +5,7 @@ using UnityEngine;
 public class GameManager : NetworkBehaviour
 {
     private List<Player> players = new List<Player>();
-    protected bool isGameStarted = false;
+    public bool isGameStarted = false;
 
     [SerializeField]
     private GameObject StartGamePrefab;
@@ -31,7 +31,6 @@ public class GameManager : NetworkBehaviour
         PostNewPlayerAddClientRpc(newNumberOfPlayers);
         if (newNumberOfPlayers == 2 && IsServer)
         {
-            //Show player
             Instantiate(StartGamePrefab, this.transform.position + Vector3.up, Quaternion.LookRotation(Vector3.down, Vector3.forward));
         }
         return players.Count - 1;

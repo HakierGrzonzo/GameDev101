@@ -307,7 +307,8 @@ MonoBehaviour:
     PlayerPrefab: {fileID: 5574639677467434922, guid: c24c521c712f40c39a7ac9cad58fdbc7,
       type: 3}
     Prefabs:
-      NetworkPrefabsLists: []
+      NetworkPrefabsLists:
+      - {fileID: 11400000, guid: 9e3052a7775374df7b8c44f6a775c2de, type: 2}
     TickRate: 30
     ClientConnectionBufferTimeout: 10
     ConnectionApproval: 0
@@ -706,5 +707,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be9de8e9eb2284f89abe3e90e28f4014, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isGameStarted: 0
   StartGamePrefab: {fileID: 332833691345987588, guid: b9e2576880d7e192da9bfe9f4d024b8e,
     type: 3}
