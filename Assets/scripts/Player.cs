@@ -21,13 +21,20 @@ public class Player : NetworkBehaviour
     public void UpdatePosition() {
         var newPosition = GetPosition();
         transform.position = newPosition;
+        transform.LookAt(gm.gameObject.transform, Vector3.up);
     }
     void Start()
     {
         if (IsServer) {
             gm = FindFirstObjectByType<GameManager>();
             index = gm.RegisterPlayer(this);
+            if (index == -1) {
+                throw new Exception("Failed to connect to already running game");
+            }
             UpdatePosition();
+        }
+        if(IsOwner) {
+            GetComponent<MeshRenderer>().material.color = Color.red;
         }
     }
 
