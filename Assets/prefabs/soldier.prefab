@@ -52,6 +52,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 0.1
+  isActive: 1
+  clickSensitivity: 0.1
 --- !u!114 &1471152655247212576
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -8,6 +9,7 @@ public class Player : NetworkBehaviour
     private int index;
     [SerializeField]
     private GameObject solider;
+    private List<Solider> soldiers = new List<Solider>();
     [SerializeField]
     private float radius = 3F;
     private GameManager gm;
@@ -42,6 +44,11 @@ public class Player : NetworkBehaviour
         }
     }
 
+    [ClientRpc]
+    void UpdateSoldiersClientRpc() {
+        this.soldiers = new List<Solider>(GetComponentsInChildren<Solider>());
+    }
+
     [ServerRpc]
     void DoFirstTickInitServerRpc() {
         if (doneFirstTickInit) return;
@@ -49,9 +56,14 @@ public class Player : NetworkBehaviour
         Debug.Log("DoingFirstTickInit");
         float soliderPosFactor = 0.8F;
         Vector3 soliderPosition = this.transform.position * soliderPosFactor + Vector3.up;
-        var soliderObj = Instantiate(solider, soliderPosition, this.transform.rotation);
+        var soldierObj = Instantiate(this.solider, soliderPosition, this.transform.rotation);
+        var soldier = soldierObj.GetComponent<Solider>();
+        soldiers.Add(soldier);
         var networkObj = GetComponent<NetworkObject>();
-        soliderObj.GetComponent<NetworkObject>().SpawnWithOwnership(networkObj.OwnerClientId);
+        var soldierNet = soldierObj.GetComponent<NetworkObject>();
+        soldierNet.SpawnWithOwnership(networkObj.OwnerClientId);
+        soldier.transform.parent = this.transform;
+        UpdateSoldiersClientRpc();
     }
     // Update is called once per frame
     void Update()
@@ -63,6 +75,19 @@ public class Player : NetworkBehaviour
             return;
         }
         DoFirstTickInitServerRpc();
-
+        if (Input.GetKeyDown(KeyCode.Space)) {
+            Debug.Log(String.Format("Deactivating {0} soldiers", soldiers.Count));
+            foreach (var s in soldiers)
+            {
+                s.isActive = false;
+            }
+        }
+        if (Input.GetMouseButtonDown(0)) {
+            Debug.Log(String.Format("Toggling {0} soldiers", soldiers.Count));
+            foreach (var s in soldiers)
+            {
+                s.checkIfShouldActivate();
+            }
+        }
     }
 }

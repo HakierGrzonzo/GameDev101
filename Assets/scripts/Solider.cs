@@ -8,31 +8,34 @@ public class Solider : NetworkBehaviour
 {
     [SerializeField]
     private float speed = .1F;
+    public bool isActive = true;
     private Rigidbody rb;
+    [SerializeField]
+    private float clickSensitivity;
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        if (IsOwner)
-        {
-            GetComponent<MeshRenderer>().material.color = Color.red;
-        }
     }
 
     Vector3 GetDesiredPos()
     {
         var mousePos = Input.mousePosition;
-        mousePos.z = Camera.main.transform.position.y;
+        mousePos.z = Camera.main.transform.position.y - this.transform.position.y;
         var target = Camera.main.ScreenToWorldPoint(mousePos);
-        Debug.Log(String.Format("{0} pos -> {1}", mousePos, target));
         target.y = 0;
         return target;
     }
 
     void OnDrawGizmos()
     {
-        Gizmos.DrawSphere(GetDesiredPos(), 0.1f);
-        Gizmos.DrawLine(GetDesiredPos(), this.transform.position);
+        if (!isActive || !IsOwner) {
+            return;
+        }
+        var desiredPos = GetDesiredPos();
+        desiredPos.y = this.transform.position.y;
+        Gizmos.DrawSphere(desiredPos, 0.1f);
+        Gizmos.DrawLine(desiredPos, this.transform.position);
     }
 
     [ServerRpc]
@@ -40,6 +43,22 @@ public class Solider : NetworkBehaviour
     {
         difference.Normalize();
         rb.AddForce(difference * speed, ForceMode.VelocityChange);
+    }
+
+    void Update() {
+        if (IsOwner)
+        {
+            GetComponent<MeshRenderer>().material.color = isActive ? Color.green : Color.red;
+        }
+    }
+
+    public void checkIfShouldActivate() {
+        var mousePos = GetDesiredPos();
+        mousePos.y = this.transform.position.y;
+        var difference = mousePos - this.transform.position;
+        if (difference.magnitude < clickSensitivity) {
+            isActive = !isActive;
+        }
     }
 
     void FixedUpdate()
@@ -52,9 +71,11 @@ public class Solider : NetworkBehaviour
         {
             return;
         }
+        if (!isActive) {
+            return;
+        }
         var mouseWorldCoord = GetDesiredPos();
         var difference = mouseWorldCoord - this.transform.position;
-        Debug.Log(difference);
         SetForceServerRpc(difference);
     }
 }
