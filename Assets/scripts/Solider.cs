@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
+using Unity.VisualScripting;
+using UnityEditor.Rendering.Universal;
 using UnityEngine;
 
 public class Solider : NetworkBehaviour
@@ -12,6 +14,8 @@ public class Solider : NetworkBehaviour
     private Rigidbody rb;
     [SerializeField]
     private float clickSensitivity;
+
+    private Vector3? targetPos = null;
     // Start is called before the first frame update
     void Start()
     {
@@ -67,15 +71,18 @@ public class Solider : NetworkBehaviour
         {
             return;
         }
-        if (!Application.isFocused)
-        {
-            return;
+        if (Input.GetMouseButtonDown(0) && isActive) {
+            targetPos = GetDesiredPos();
         }
-        if (!isActive) {
-            return;
+        if (targetPos is Vector3 target) {
+            var difference = target - this.transform.position;
+            SetForceServerRpc(difference);
+            var lineRenderer = GetComponent<LineRenderer>();
+            lineRenderer.enabled = difference.magnitude > 0.1;
+            var normalizedTarget = new Vector3(target.x, this.transform.position.y, target.z);
+            // this array declaration is stupid
+            var positions = new Vector3[] {this.transform.position, normalizedTarget};
+            lineRenderer.SetPositions(positions);
         }
-        var mouseWorldCoord = GetDesiredPos();
-        var difference = mouseWorldCoord - this.transform.position;
-        SetForceServerRpc(difference);
     }
 }
