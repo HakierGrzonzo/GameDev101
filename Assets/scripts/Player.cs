@@ -14,6 +14,8 @@ public class Player : NetworkBehaviour
     private float radius = 3F;
     private GameManager gm;
     private Vector3 intendedPosition;
+
+    private float lastSpawnedAt = 0f;
     private bool doneFirstTickInit = false;
 
     Vector3 GetPosition() {
@@ -49,27 +51,35 @@ public class Player : NetworkBehaviour
         this.soldiers = new List<Solider>(GetComponentsInChildren<Solider>());
     }
 
-    [ServerRpc]
-    void DoFirstTickInitServerRpc() {
-        if (doneFirstTickInit) return;
-        doneFirstTickInit = true;
-        Debug.Log("DoingFirstTickInit");
+    void SpawnSolider() {
         float soliderPosFactor = 0.8F;
         Vector3 soliderPosition = this.transform.position * soliderPosFactor + Vector3.up;
         var soldierObj = Instantiate(this.solider, soliderPosition, this.transform.rotation);
         var soldier = soldierObj.GetComponent<Solider>();
         soldiers.Add(soldier);
         var networkObj = GetComponent<NetworkObject>();
+        lastSpawnedAt = Time.timeSinceLevelLoad;
         var soldierNet = soldierObj.GetComponent<NetworkObject>();
         soldierNet.SpawnWithOwnership(networkObj.OwnerClientId);
         soldier.transform.parent = this.transform;
         UpdateSoldiersClientRpc();
+    }
+
+    [ServerRpc]
+    void DoFirstTickInitServerRpc() {
+        if (doneFirstTickInit) return;
+        doneFirstTickInit = true;
+        Debug.Log("DoingFirstTickInit");
+        SpawnSolider();
     }
     // Update is called once per frame
     void Update()
     {
         if (!gm.isGameStarted) {
             return;
+        }
+        if (IsServer && Time.timeSinceLevelLoad - lastSpawnedAt > 10f) {
+            SpawnSolider();
         }
         if (!IsOwner) {
             return;
