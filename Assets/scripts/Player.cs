@@ -78,7 +78,7 @@ public class Player : NetworkBehaviour
         if (!gm.isGameStarted) {
             return;
         }
-        if (IsServer && Time.timeSinceLevelLoad - lastSpawnedAt > 10f) {
+        if (IsServer && Time.timeSinceLevelLoad - lastSpawnedAt > 4f && doneFirstTickInit) {
             SpawnSolider();
         }
         if (!IsOwner) {
