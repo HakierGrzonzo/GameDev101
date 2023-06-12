@@ -7,6 +7,7 @@ public class Solider : NetworkBehaviour
     private float speed = .1F;
     public bool isActive = true;
     private Rigidbody rb;
+    private ProceduralPolyMesh playboard;
     [SerializeField]
     private float clickSensitivity;
 
@@ -15,6 +16,7 @@ public class Solider : NetworkBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        playboard = FindFirstObjectByType<ProceduralPolyMesh>();
     }
 
     Vector3 GetDesiredPos()
@@ -42,6 +44,11 @@ public class Solider : NetworkBehaviour
     {
         difference.Normalize();
         rb.AddForce(difference * speed, ForceMode.VelocityChange);
+    }
+
+    [ServerRpc]
+    void DieServerRpc() {
+        this.NetworkObject.Despawn();
     }
 
     void Update() {
@@ -78,6 +85,9 @@ public class Solider : NetworkBehaviour
             // this array declaration is stupid
             var positions = new Vector3[] {this.transform.position, normalizedTarget};
             lineRenderer.SetPositions(positions);
+        }
+        if (playboard.IsOutOfBounds(this.transform.position)) {
+            DieServerRpc();
         }
     }
 }
