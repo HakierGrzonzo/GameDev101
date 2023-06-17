@@ -1,3 +1,4 @@
+using System;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -65,6 +66,25 @@ public class Solider : NetworkBehaviour
         if (difference.magnitude < clickSensitivity) {
             isActive = !isActive;
         }
+    }
+
+    private void OnTriggerEnter(Collider other) {
+        if (!IsServer) {
+            return;
+        }
+
+        var gm = other.gameObject;
+        Debug.Log(String.Format("Collision {0}", gm.tag));
+        if (!gm.CompareTag("Player")) {
+            return;
+        }
+
+        var ourPlayerId = this.NetworkObject.OwnerClientId;
+        var collisionPlayerId = gm.GetComponent<NetworkObject>().OwnerClientId;
+        if (collisionPlayerId == ourPlayerId) {
+            return;
+        }
+        FindFirstObjectByType<GameManager>().KillPlayer(collisionPlayerId);
     }
 
     void FixedUpdate()

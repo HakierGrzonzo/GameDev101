@@ -7,13 +7,12 @@ public class GameManager : NetworkBehaviour
     private List<Player> players = new List<Player>();
     public bool isGameStarted = false;
 
+    private int playersThatDied = 0;
+
     [SerializeField]
     private GameObject StartGamePrefab;
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
+    [SerializeField]
+    private GameObject EndGamePrefab;
 
     public int RegisterPlayer(Player player)
     {
@@ -52,6 +51,29 @@ public class GameManager : NetworkBehaviour
     public int NumberOfPlayers()
     {
         return players.Count;
+    }
+
+    [ClientRpc]
+    void GameOverClientRpc() {
+        Instantiate(EndGamePrefab, this.transform.position + Vector3.up, Quaternion.LookRotation(Vector3.down, Vector3.forward));
+    }
+
+    public void KillPlayer(ulong playerId) {
+        if (this.NetworkManager.ConnectedClients.TryGetValue(playerId, out var client)) {
+            foreach (var soldierNet in client.PlayerObject.GetComponentsInChildren<NetworkObject>()) {
+                try {
+                    soldierNet.Despawn();
+                } catch {}
+            }
+            try {
+                client.PlayerObject.Despawn();
+            } catch {}
+            playersThatDied++;
+        }
+        Debug.Log(playersThatDied);
+        if (playersThatDied == NumberOfPlayers() -1) {
+            GameOverClientRpc();
+        }
     }
 
     public bool isGameReadyToStart()

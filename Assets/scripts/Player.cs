@@ -28,7 +28,9 @@ public class Player : NetworkBehaviour
     public void UpdatePosition() {
         var newPosition = GetPosition();
         transform.position = newPosition;
-        transform.LookAt(gm.gameObject.transform, Vector3.up);
+        var target = gm.gameObject.transform.position;
+        target.y = newPosition.y;
+        transform.LookAt(target, Vector3.up);
     }
 
     void Start()

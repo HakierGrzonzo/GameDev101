@@ -710,3 +710,5 @@ MonoBehaviour:
   isGameStarted: 0
   StartGamePrefab: {fileID: 332833691345987588, guid: b9e2576880d7e192da9bfe9f4d024b8e,
     type: 3}
+  EndGamePrefab: {fileID: 5669693301015987110, guid: 4cd75ae9b22f76138bdde165ab9f2b57,
+    type: 3}
