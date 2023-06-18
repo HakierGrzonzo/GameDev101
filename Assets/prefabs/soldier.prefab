@@ -353,6 +353,8 @@ MonoBehaviour:
   range: 1
   maxSpeedToShoot: 0.2
   damage: 20
+  shotPrefab: {fileID: 3622002472042781301, guid: 95880b2a83f8f22278759cb35469031f,
+    type: 3}
 --- !u!82 &4228731397786114155
 AudioSource:
   m_ObjectHideFlags: 0

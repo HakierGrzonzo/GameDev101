@@ -18,6 +18,9 @@ public class Turret : NetworkBehaviour {
 
     private Rigidbody rb;
 
+    [SerializeField]
+    private GameObject shotPrefab;
+
     private void Start() {
         rb = GetComponent<Rigidbody>();
     }
@@ -62,15 +65,26 @@ public class Turret : NetworkBehaviour {
     private void DeliverShotServerRpc(NetworkObjectReference target) {
         if(target.TryGet(out var netObject)) {
             netObject.GetComponent<Killable>().DoDamage(damage);
-            PostShotClientRpc();
+            PostShotClientRpc(netObject.transform.position);
         } else {
             Debug.LogError("Failed to resolve Killable");
         }
     }
 
     [ClientRpc]
-    private void PostShotClientRpc() {
+    private void PostShotClientRpc(Vector3 targetPos) {
         GetComponent<AudioSource>().Play();
+        var shot = Instantiate(shotPrefab, Vector3.zero, this.transform.rotation);
+        var shotLine = shot.GetComponent<LineRenderer>();
+        var coords = new Vector3[] {
+            this.transform.position,
+            targetPos,
+        };
+        shotLine.SetPositions(coords);
+        var lineColor = IsOwner ? Color.blue : Color.red;
+        shotLine.startColor = lineColor;
+        shotLine.endColor = lineColor;
+
     }
 
     private void OnDrawGizmos() {
