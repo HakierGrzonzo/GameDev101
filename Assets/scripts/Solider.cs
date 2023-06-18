@@ -55,7 +55,9 @@ public class Solider : NetworkBehaviour
     void Update() {
         if (IsOwner)
         {
-            GetComponent<MeshRenderer>().material.color = isActive ? Color.green : Color.red;
+            var color = isActive ? Color.green : Color.red;
+            var renderer = GetComponent<MeshRenderer>();
+            renderer.material.SetColor("_EmissionColor", color);
         }
     }
 
