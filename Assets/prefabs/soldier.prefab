@@ -18,6 +18,8 @@ GameObject:
   - component: {fileID: 9195838085191750634}
   - component: {fileID: 7953981683881405755}
   - component: {fileID: 4767128830270121773}
+  - component: {fileID: -4787259970221755356}
+  - component: {fileID: 8689033110565249596}
   m_Layer: 0
   m_Name: soldier
   m_TagString: soldier
@@ -319,3 +321,32 @@ LineRenderer:
   m_UseWorldSpace: 1
   m_Loop: 0
   m_ApplyActiveColorSpace: 1
+--- !u!114 &-4787259970221755356
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1589126372737426380}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5917854590be3974bc2cd92cf458b6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHp: 100
+--- !u!114 &8689033110565249596
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1589126372737426380}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1563c4b777461a64086b41433f7d1ce0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shotInterval: 1
+  range: 1
+  maxSpeedToShoot: 0.2
+  damage: 20
