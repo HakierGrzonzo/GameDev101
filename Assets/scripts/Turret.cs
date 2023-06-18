@@ -62,9 +62,15 @@ public class Turret : NetworkBehaviour {
     private void DeliverShotServerRpc(NetworkObjectReference target) {
         if(target.TryGet(out var netObject)) {
             netObject.GetComponent<Killable>().DoDamage(damage);
+            PostShotClientRpc();
         } else {
             Debug.LogError("Failed to resolve Killable");
         }
+    }
+
+    [ClientRpc]
+    private void PostShotClientRpc() {
+        GetComponent<AudioSource>().Play();
     }
 
     private void OnDrawGizmos() {
